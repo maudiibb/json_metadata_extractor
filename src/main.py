@@ -1,18 +1,12 @@
-from src.file_scanner import list_files
-from src.metadata_extractor import extract_metadata
+from src.file_scanner import build_tree
 import json
 
-
-def collect_all_metadata(root_path):
-    # Går igenom alla filer under root_path (via list_files) och
-    # extraherar metadata för varje fil (via extract_metadata).
-    results = []
-    for file_path in list_files(root_path):
-        metadata = extract_metadata(file_path)
-        results.append(metadata)
-    return results
-
 def save_to_json(data, output_path):
-       with open(output_path, "w", encoding="utf-8") as f:
+    with open(output_path, "w", encoding="utf-8") as f:
         json.dump(data, f, indent=2, ensure_ascii=False)
 
+
+if __name__ == "__main__":
+    trad = build_tree(r"C:\Users\amrik\OneDrive\Documents\NetBeansProjects")
+    save_to_json(trad, "test_output.json")
+    print("Klart!")

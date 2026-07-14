@@ -1,16 +1,35 @@
 from pathlib import Path
+from src.metadata_extractor import extract_metadata
 
-def list_files(root_path):
-    # Går igenom en mapp (och alla undermappar) och lämnar ut varje FIL
-    # den hittar, en i taget.
-    root = Path(root_path)
-    # root.rglob("*") ger dig ALLA filer och mappar, rekursivt
-    # genom hela mappträdet under root_path.
-    for item in root.rglob("*"):
-        if item.is_dir():
-            # Vi bryr oss bara om filer, inte mappar - hoppa över
-            # och fortsätt till nästa item i loopen.
-            continue
-        yield item
+def build_tree(folder_path):
+    """
+    Bygger rekursivt ett träd av mappar och filer under folder_path.
+    Returnerar en dict som representerar HELA mappen, med en
+    "children"-lista som innehåller undermappar (rekursivt) och filer.
+    """
+    folder = Path(folder_path)
 
+    node = {
+        "namn": folder.name,
+        "typ": "mapp",
+        "sökväg": str(folder),
+        "undermappar": []
+    }
+    try:
+        for item in folder.iterdir():
+            if item.is_dir():
+                # Det rekursiva steget: bygg ETT HELT TRÄD för undermappen
+                # genom att anropa build_tree på DEN, och lägg till hela
+                # resultatet (en dict, med sin egen undermappar-lista) i vår lista.
+                subtree = build_tree(item)
+                node["undermappar"].append(subtree)
+            else:
+                # Bas-fallet för denna gren: en fil har inga egna "undermappar",
+                # så vi använder bara den befintliga funktionen
+                file_metadata = extract_metadata(item)
+                node["undermappar"].append(file_metadata)
+    except OSError as e:
+        print(f"Kunde inte läsa {folder_path}: {e}")
+        return None
 
+    return node
