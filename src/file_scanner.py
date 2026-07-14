@@ -19,8 +19,6 @@ def build_tree(folder_path):
         for item in folder.iterdir():
             if item.is_dir():
                 # Det rekursiva steget: bygg ETT HELT TRÄD för undermappen
-                # genom att anropa build_tree på DEN, och lägg till hela
-                # resultatet (en dict, med sin egen undermappar-lista) i vår lista.
                 subtree = build_tree(item)
                 node["undermappar"].append(subtree)
             else:

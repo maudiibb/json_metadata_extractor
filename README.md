@@ -11,9 +11,10 @@ resten av koden (metadata-extrahering, JSON-sparning) behöver ändras.
 
 ## Funktioner (nuvarande version)
 
-- Går igenom en mapp och alla dess undermappar rekursivt
+- Går igenom en mapp och alla dess undermappar **rekursivt**, och bygger
+  ett hierarkiskt träd som speglar den faktiska mappstrukturen
 - Extraherar metadata per fil: namn, filändelse, sökväg, storlek och tidsstämplar
-- Hanterar fel per fil (låsta filer, saknad behörighet) utan att hela
+- Hanterar fel per mapp/fil (låsta filer, saknad behörighet) utan att hela
   körningen kraschar
 - Sparar resultatet som en läsbar, UTF-8-kodad JSON-fil
 
@@ -39,10 +40,13 @@ pip install -r requirements.txt
 ```
 
 ## Projektstruktur
+
+```
 src/
-├── file_scanner.py       # Hittar filer i en mapp (generator, rekursivt)
-├── metadata_extractor.py # Extraherar metadata för en enskild fil
+├── file_scanner.py       # build_tree(): bygger rekursivt mappträdet
+├── metadata_extractor.py # extract_metadata(): metadata för en enskild fil
 └── main.py                # Kopplar ihop allt och sparar till JSON
+```
 
 ## Användning
 
@@ -57,18 +61,33 @@ Resultatet sparas som `test_output.json` i projektroten.
 
 ### Exempel på output
 
+Resultatet är hierarkiskt — varje mapp har en `children`-lista med sina
+undermappar (som i sin tur har sina egna `children`) och filer:
+
 ```json
-[
-  {
-    "namn": "rapport",
-    "suffix": ".pdf",
-    "sökväg": "C:\\Users\\namn\\OneDrive\\Dokument\\rapport.pdf",
-    "storlek": 278178,
-    "skap_tid": "2026-06-24T18:03:55.822611",
-    "senast_modifierad": "2026-06-24T18:03:56.885165",
-    "senast öppnad": "2026-06-25T13:53:58.736509"
-  }
-]
+{
+  "namn": "Utbye",
+  "typ": "mapp",
+  "sökväg": "C:\\Users\\namn\\OneDrive\\Desktop\\Utbye",
+  "children": [
+    {
+      "namn": "Dokument",
+      "typ": "mapp",
+      "sökväg": "C:\\Users\\namn\\OneDrive\\Desktop\\Utbye\\Dokument",
+      "children": [
+        {
+          "namn": "rapport",
+          "suffix": ".pdf",
+          "sökväg": "C:\\Users\\namn\\OneDrive\\Desktop\\Utbye\\Dokument\\rapport.pdf",
+          "storlek": 278178,
+          "skap_tid": "2026-06-24T18:03:55.822611",
+          "senast_modifierad": "2026-06-24T18:03:56.885165",
+          "senast öppnad": "2026-06-25T13:53:58.736509"
+        }
+      ]
+    }
+  ]
+}
 ```
 
 ## Vägen mot fler användare (Graph API)
