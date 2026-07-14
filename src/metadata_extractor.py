@@ -1,8 +1,11 @@
 from datetime import datetime
 
 def extract_metadata(file_path):
+    #Tar emot ETT Path-objekt 
+    #Returnerar en dict med metadatan, 
     try:
-        stat = file_path.stat()  # ger dig ett "stat_result"-objekt med rådata
+        # .stat() hämtar rådata om filen från operativsystemet
+        stat = file_path.stat()  
     except OSError as e:
         print(f"Kunde inte läsa {file_path}: {e}")
         return None
@@ -19,8 +22,3 @@ def extract_metadata(file_path):
     
     return metadata
 
-
-if __name__ == "__main__":
-    from pathlib import Path
-    test_file = Path(r"C:\Users\amrik\OneDrive\Desktop\Utbye")
-    print(extract_metadata(test_file))
