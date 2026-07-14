@@ -2,7 +2,10 @@ from src.file_scanner import list_files
 from src.metadata_extractor import extract_metadata
 import json
 
+
 def collect_all_metadata(root_path):
+    # Går igenom alla filer under root_path (via list_files) och
+    # extraherar metadata för varje fil (via extract_metadata).
     results = []
     for file_path in list_files(root_path):
         metadata = extract_metadata(file_path)
